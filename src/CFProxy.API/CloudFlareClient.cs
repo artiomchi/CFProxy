@@ -9,22 +9,22 @@ namespace CFProxy.API
 {
     public class CloudFlareClient
     {
-        private readonly HttpClient _client;
-
         public CloudFlareClient(HttpClient client)
         {
-            _client = client;
+            Client = client;
         }
+
+        public HttpClient Client { get; }
 
         public void Authenticate(string email, string key)
         {
-            _client.DefaultRequestHeaders.Add("X-Auth-Email", email);
-            _client.DefaultRequestHeaders.Add("X-Auth-Key", key);
+            Client.DefaultRequestHeaders.Add("X-Auth-Email", email);
+            Client.DefaultRequestHeaders.Add("X-Auth-Key", key);
         }
 
         public async Task<Zone[]> GetZones()
         {
-            var response = await _client.GetAsync("zones");
+            var response = await Client.GetAsync("zones");
             if (!response.IsSuccessStatusCode)
                 return Array.Empty<Zone>();
 
@@ -37,7 +37,7 @@ namespace CFProxy.API
 
         public async Task<Record[]> GetRecords(string zoneid, string type, string name)
         {
-            var response = await _client.GetAsync($"zones/{zoneid}/dns_records?name={Uri.EscapeUriString(name)}");
+            var response = await Client.GetAsync($"zones/{zoneid}/dns_records?name={Uri.EscapeUriString(name)}");
             if (!response.IsSuccessStatusCode)
                 return Array.Empty<Record>();
 
@@ -51,7 +51,7 @@ namespace CFProxy.API
         public async Task<bool> CreateRecord(string zoneid, string type, string name, string value)
         {
             var content = new CreateDnsRecordRequest { type = type, name = name, content = value };
-            var response = await _client.PostAsJsonAsync($"zones/{zoneid}/dns_records", content);
+            var response = await Client.PostAsJsonAsync($"zones/{zoneid}/dns_records", content);
             if (!response.IsSuccessStatusCode)
                 return false;
 
@@ -62,7 +62,7 @@ namespace CFProxy.API
         public async Task<bool> UpdateRecord(string zoneid, string id, string type, string name, string value)
         {
             var content = new UpdateDnsRecordRequest { type = type, name = name, content = value };
-            var response = await _client.PutAsJsonAsync($"zones/{zoneid}/dns_records/{id}", content);
+            var response = await Client.PutAsJsonAsync($"zones/{zoneid}/dns_records/{id}", content);
             if (!response.IsSuccessStatusCode)
                 return false;
 
@@ -72,7 +72,7 @@ namespace CFProxy.API
 
         public async Task<bool> DeleteRecord(string zoneid, string id)
         {
-            var response = await _client.DeleteAsync($"zones/{zoneid}/dns_records/{id}");
+            var response = await Client.DeleteAsync($"zones/{zoneid}/dns_records/{id}");
             if (!response.IsSuccessStatusCode)
                 return false;
 
