@@ -5,12 +5,19 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <UserSecretsId>93d8c951-fd77-4ad2-971e-99f38bce25a9</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/fa71dffb-3215-473e-8f41-c897de03a9c5/resourcegroups/Default-Web-WestEurope/providers/microsoft.insights/components/CFProxyAPI</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/fa71dffb-3215-473e-8f41-c897de03a9c5/resourcegroups/Default-Web-WestEurope/providers/microsoft.insights/components/CFProxyAPI</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.2105168" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>
