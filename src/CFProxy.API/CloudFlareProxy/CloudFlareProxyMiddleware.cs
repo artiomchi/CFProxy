@@ -23,20 +23,22 @@ namespace CFProxy.API.CloudFlareProxy
                 RequestUri = new Uri(context.Request.Path.Value.TrimStart('/'), UriKind.Relative),
             })
             {
-                foreach (var header in context.Request.Headers)
-                    if (!string.Equals(header.Key, "host", StringComparison.OrdinalIgnoreCase))
-                        request.Headers.Add(header.Key, header.Value.ToArray());
                 if (context.Request.ContentLength > 0)
                     request.Content = new StreamContent(context.Request.Body);
+
+                foreach (var header in context.Request.Headers)
+                    if (!string.Equals(header.Key, "host", StringComparison.OrdinalIgnoreCase))
+                        if (!request.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray()) && request.Content != null)
+                            request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
 
                 using (var result = await client.Client.SendAsync(request))
                 {
                     context.Response.StatusCode = (int)result.StatusCode;
                     foreach (var header in result.Headers)
-                        context.Response.Headers.Add(header.Key, header.Value.ToArray());
+                        context.Response.Headers[header.Key] = header.Value.ToArray();
 
                     foreach (var header in result.Content.Headers)
-                        context.Response.Headers.Add(header.Key, header.Value.ToArray());
+                        context.Response.Headers[header.Key] = header.Value.ToArray();
 
                     context.Response.Headers.Remove("transfer-encoding");
                     using (var responseStream = await result.Content.ReadAsStreamAsync())
