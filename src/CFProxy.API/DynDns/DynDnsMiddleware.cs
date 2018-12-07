@@ -33,8 +33,7 @@ namespace CFProxy.API.DynDns
             if (string.IsNullOrWhiteSpace(hostname))
                 return "nohost";
 
-
-            client.Authenticate(credentials.login, credentials.password);
+            client.Authenticate(credentials.login, credentials.password, context.Request.Headers["User-Agent"]);
 
             var zones = await client.GetZones();
             var zone = zones

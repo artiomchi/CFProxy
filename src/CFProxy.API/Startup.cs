@@ -3,7 +3,6 @@ using CFProxy.API.CloudFlareProxy;
 using CFProxy.API.DynDns;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,7 +32,7 @@ namespace CFProxy.API
             services.AddHttpClient<CloudFlareClient>(client =>
             {
                 client.BaseAddress = new Uri("https://api.cloudflare.com/client/v4/");
-                client.DefaultRequestHeaders.Add("User-Agent", "CFProxy (+https://cfproxy.com)");
+                client.DefaultRequestHeaders.Add("X-Proxy-User-Agent", "CFProxy (+https://cfproxy.com)");
             });
         }
 
