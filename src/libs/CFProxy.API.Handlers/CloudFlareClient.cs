@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CFProxy.API.CloudFlare;
-using CFProxy.API.CloudFlare.Api;
+using CFProxy.API.Handlers.CloudFlare;
+using CFProxy.API.Handlers.CloudFlare.Api;
 
-namespace CFProxy.API
+namespace CFProxy.API.Handlers
 {
     public class CloudFlareClient
     {

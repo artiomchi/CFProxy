@@ -1,6 +1,7 @@
 ﻿using System;
 using CFProxy.API.CloudFlareProxy;
 using CFProxy.API.DynDns;
+using CFProxy.API.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

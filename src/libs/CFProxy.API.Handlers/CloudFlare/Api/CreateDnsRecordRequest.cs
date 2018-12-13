@@ -1,4 +1,4 @@
-﻿namespace CFProxy.API.CloudFlare.Api
+﻿namespace CFProxy.API.Handlers.CloudFlare.Api
 {
     public class CreateDnsRecordRequest
     {

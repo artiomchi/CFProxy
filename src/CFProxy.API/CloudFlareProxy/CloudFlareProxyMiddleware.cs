@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CFProxy.API.Handlers;
 using Microsoft.AspNetCore.Http;
 
 namespace CFProxy.API.CloudFlareProxy

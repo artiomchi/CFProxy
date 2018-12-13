@@ -1,4 +1,4 @@
-﻿namespace CFProxy.API.CloudFlare
+﻿namespace CFProxy.API.Handlers.CloudFlare
 {
     public class Record
     {

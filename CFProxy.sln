@@ -2,6 +2,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{577FDF95-8314-41C1-BAB0-4BE3D3F51850}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{45CE045B-CE8D-4EA8-8210-2ED8479651B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{06F0F5C3-33E2-482A-B7E9-679E09CE3710}"
@@ -12,10 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy", "src\CFProxy\CFPr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.API", "src\CFProxy.API\CFProxy.API.csproj", "{D61C4844-C8DA-4CC2-B974-0CDF0CDE9712}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solution", ".solution", "{577FDF95-8314-41C1-BAB0-4BE3D3F51850}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.API.Handlers", "src\libs\CFProxy.API.Handlers\CFProxy.API.Handlers.csproj", "{2B638E85-C8EE-45A5-A277-B4F98D2B92FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,10 @@ Global
 		{D61C4844-C8DA-4CC2-B974-0CDF0CDE9712}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D61C4844-C8DA-4CC2-B974-0CDF0CDE9712}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D61C4844-C8DA-4CC2-B974-0CDF0CDE9712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B638E85-C8EE-45A5-A277-B4F98D2B92FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B638E85-C8EE-45A5-A277-B4F98D2B92FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B638E85-C8EE-45A5-A277-B4F98D2B92FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B638E85-C8EE-45A5-A277-B4F98D2B92FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -38,6 +44,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{310434F0-1BE5-4484-9B4E-8D1F424942FB} = {45CE045B-CE8D-4EA8-8210-2ED8479651B7}
 		{D61C4844-C8DA-4CC2-B974-0CDF0CDE9712} = {45CE045B-CE8D-4EA8-8210-2ED8479651B7}
+		{2B638E85-C8EE-45A5-A277-B4F98D2B92FB} = {06F0F5C3-33E2-482A-B7E9-679E09CE3710}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9F0204D-6049-48F6-9DF3-1092333360E3}
