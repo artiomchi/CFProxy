@@ -1,26 +1,47 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Http;
 
 namespace CFProxy.API.Handlers.DynDns
 {
     public class NicUpdateHandler
     {
-        public async Task<string> Process(HttpContext context, CloudFlareClient client)
+        public Task<string> Process(HttpContext context, CloudFlareClient client)
         {
-            var credentials = GetBasicAuth(context);
+            var authorizationHeader = context.TryGetHeader("Authorization");
+            var userAgentHeader = context.TryGetHeader("User-Agent");
+            var myip = (string)context.Request.Query["myip"] ?? context.TryGetRequestIPAddress();
+            var hostname = context.Request.Query["hostname"];
+
+            return Process(client, authorizationHeader, userAgentHeader, myip, hostname);
+        }
+
+        public Task<string> Process(HttpRequestMessage request, CloudFlareClient client)
+        {
+            var authorizationHeader = request.TryGetHeader("Authorization");
+            var userAgentHeader = request.TryGetHeader("User-Agent");
+            var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
+            var myip = query["myip"] ?? request.TryGetRequestIPAddress();
+            var hostname = query["hostname"];
+
+            return Process(client, authorizationHeader, userAgentHeader, myip, hostname);
+        }
+
+        public async Task<string> Process(CloudFlareClient client, string authHeader, string userAgent, string myip, string hostname)
+        {
+            var credentials = GetBasicAuth(authHeader);
             if (!credentials.valid)
                 return "badauth";
 
-            string myip = (string)context.Request.Query["myip"] ?? context.Connection.RemoteIpAddress.ToString();
-            string hostname = context.Request.Query["hostname"];
             if (string.IsNullOrWhiteSpace(hostname))
                 return "nohost";
 
-            client.Authenticate(credentials.login, credentials.password, context.Request.Headers["User-Agent"]);
+            client.Authenticate(credentials.login, credentials.password, userAgent);
 
             var zones = await client.GetZones();
             var zone = zones
@@ -55,14 +76,14 @@ namespace CFProxy.API.Handlers.DynDns
                 : "911";
         }
 
-        private (bool valid, string login, string password) GetBasicAuth(HttpContext context)
+        private (bool valid, string login, string password) GetBasicAuth(string authorizationHeader)
         {
-            if (!context.Request.Headers.ContainsKey("Authorization"))
+            if (authorizationHeader == null)
                 return (false, null, null);
 
             try
             {
-                var authHeader = AuthenticationHeaderValue.Parse(context.Request.Headers["Authorization"]);
+                var authHeader = AuthenticationHeaderValue.Parse(authorizationHeader);
                 var credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(authHeader.Parameter));
                 var credentials = credentialString.Split(new[] { ':' }, 2);
                 return (true, credentials[0], credentials[1]);

@@ -1,4 +1,5 @@
 ﻿using System;
+using CFProxy.API.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -14,7 +15,7 @@ namespace CFProxy.API.DynDns
             app.Map("/checkip", mapApp
                 => mapApp.Run(context
                     => context.Response.WriteAsync(
-                        context.Connection.RemoteIpAddress.ToString())));
+                        context.TryGetRequestIPAddress())));
 
             app.Map("/nic/update", mapApp => mapApp.UseMiddleware<DynDnsMiddleware>());
 
