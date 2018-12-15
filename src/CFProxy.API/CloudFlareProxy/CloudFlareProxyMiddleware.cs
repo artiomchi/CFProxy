@@ -24,13 +24,16 @@ namespace CFProxy.API.CloudFlareProxy
                 RequestUri = new Uri(context.Request.Path.Value.TrimStart('/'), UriKind.Relative),
             })
             {
-                if (context.Request.ContentLength > 0)
-                    request.Content = new StreamContent(context.Request.Body);
+                var requestIP = context.TryGetRequestIPAddress();
+                if (requestIP != null)
+                    request.Headers.TryAddWithoutValidation("X-Forwarded-For", requestIP);
 
-                foreach (var header in context.Request.Headers)
-                    if (!string.Equals(header.Key, "host", StringComparison.OrdinalIgnoreCase))
-                        if (!request.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray()) && request.Content != null)
-                            request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                if (context.Request.ContentLength > 0)
+                {
+                    request.Content = new StreamContent(context.Request.Body);
+                    foreach (var header in context.Request.Headers)
+                        request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                }
 
                 using (var result = await client.Client.SendAsync(request))
                 {

@@ -30,11 +30,7 @@ namespace CFProxy.API
                 options.HttpsPort = 443;
             });
 
-            services.AddHttpClient<CloudFlareClient>(client =>
-            {
-                client.BaseAddress = new Uri("https://api.cloudflare.com/client/v4/");
-                client.DefaultRequestHeaders.Add("X-Proxy-User-Agent", "CFProxy (+https://cfproxy.com)");
-            });
+            services.AddHttpClient<CloudFlareClient>(CloudFlareClient.ConfigureClient);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

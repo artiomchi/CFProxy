@@ -16,6 +16,12 @@ namespace CFProxy.API.Handlers
 
         public HttpClient Client { get; }
 
+        public static void ConfigureClient(HttpClient client)
+        {
+            client.BaseAddress = new Uri("https://api.cloudflare.com/client/v4/");
+            client.DefaultRequestHeaders.Add("X-Proxy-User-Agent", "CFProxy (+https://cfproxy.com)");
+        }
+
         public void Authenticate(string email, string key, string userAgent, string requestIP)
         {
             if (!string.IsNullOrEmpty(userAgent))
