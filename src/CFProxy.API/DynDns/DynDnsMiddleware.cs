@@ -14,10 +14,9 @@ namespace CFProxy.API.DynDns
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, CloudFlareClient client)
+        public async Task Invoke(HttpContext context, NicUpdateHandler handler)
         {
-            var handler = new NicUpdateHandler();
-            var response = await handler.Process(context, client);
+            var response = await handler.Process(context);
             await context.Response.WriteAsync(response);
         }
     }

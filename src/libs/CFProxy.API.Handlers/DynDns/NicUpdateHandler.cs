@@ -11,28 +11,37 @@ namespace CFProxy.API.Handlers.DynDns
 {
     public class NicUpdateHandler
     {
-        public Task<string> Process(HttpContext context, CloudFlareClient client)
+        private readonly CloudFlareClient _client;
+
+        public NicUpdateHandler(CloudFlareClient client)
+        {
+            _client = client;
+        }
+
+        public Task<string> Process(HttpContext context)
         {
             var authorizationHeader = context.TryGetHeader("Authorization");
             var userAgentHeader = context.TryGetHeader("User-Agent");
-            var myip = (string)context.Request.Query["myip"] ?? context.TryGetRequestIPAddress();
+            var requestIP = context.TryGetRequestIPAddress();
+            var myip = (string)context.Request.Query["myip"] ?? requestIP;
             var hostname = context.Request.Query["hostname"];
 
-            return Process(client, authorizationHeader, userAgentHeader, myip, hostname);
+            return Process(authorizationHeader, userAgentHeader, requestIP, myip, hostname);
         }
 
-        public Task<string> Process(HttpRequestMessage request, CloudFlareClient client)
+        public Task<string> Process(HttpRequestMessage request)
         {
             var authorizationHeader = request.TryGetHeader("Authorization");
             var userAgentHeader = request.TryGetHeader("User-Agent");
             var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
-            var myip = query["myip"] ?? request.TryGetRequestIPAddress();
+            var requestIP = request.TryGetRequestIPAddress();
+            var myip = query["myip"] ?? requestIP;
             var hostname = query["hostname"];
 
-            return Process(client, authorizationHeader, userAgentHeader, myip, hostname);
+            return Process(authorizationHeader, userAgentHeader, requestIP, myip, hostname);
         }
 
-        public async Task<string> Process(CloudFlareClient client, string authHeader, string userAgent, string myip, string hostname)
+        public async Task<string> Process(string authHeader, string userAgent, string requestIP, string myip, string hostname)
         {
             var credentials = GetBasicAuth(authHeader);
             if (!credentials.valid)
@@ -41,9 +50,9 @@ namespace CFProxy.API.Handlers.DynDns
             if (string.IsNullOrWhiteSpace(hostname))
                 return "nohost";
 
-            client.Authenticate(credentials.login, credentials.password, userAgent);
+            _client.Authenticate(credentials.login, credentials.password, userAgent, requestIP);
 
-            var zones = await client.GetZones();
+            var zones = await _client.GetZones();
             var zone = zones
                 .Where(z => hostname.EndsWith(z.Name, StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(z => z.Name.Length)
@@ -53,14 +62,14 @@ namespace CFProxy.API.Handlers.DynDns
 
             var recordType = myip.IndexOf(':') > 0 ? "AAAA" : "A";
 
-            var records = (await client.GetRecords(zone.Id, recordType, hostname))
+            var records = (await _client.GetRecords(zone.Id, recordType, hostname))
                 ?.Where(r => string.Equals(r.Name, hostname, StringComparison.OrdinalIgnoreCase))
                 .ToArray();
             if (records == null)
                 return "911";
             if (records.Length == 0)
             {
-                var createSuccess = await client.CreateRecord(zone.Id, recordType, hostname, myip);
+                var createSuccess = await _client.CreateRecord(zone.Id, recordType, hostname, myip);
 
                 return createSuccess
                     ? "ok " + myip
@@ -68,9 +77,9 @@ namespace CFProxy.API.Handlers.DynDns
             }
 
             foreach (var record in records.Skip(1))
-                await client.DeleteRecord(zone.Id, record.Id);
+                await _client.DeleteRecord(zone.Id, record.Id);
 
-            var updateSuccess = await client.UpdateRecord(zone.Id, records[0].Id, recordType, hostname, myip);
+            var updateSuccess = await _client.UpdateRecord(zone.Id, records[0].Id, recordType, hostname, myip);
             return updateSuccess
                 ? "ok " + myip
                 : "911";

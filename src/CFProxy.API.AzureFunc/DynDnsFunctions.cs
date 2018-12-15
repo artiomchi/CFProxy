@@ -6,6 +6,7 @@ using CFProxy.API.Handlers;
 using CFProxy.API.Handlers.DynDns;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace CFProxy.API.AzureFunc
@@ -14,15 +15,14 @@ namespace CFProxy.API.AzureFunc
     {
         [FunctionName("CheckIP")]
         public static HttpResponseMessage CheckIP(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "checkip")] HttpRequestMessage req,
-            ILogger logger)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "checkip")] HttpRequestMessage req)
         {
             var requestIP = req.TryGetRequestIPAddress();
             if (requestIP == null)
             {
-                logger.LogError("Request not proxied, can't get the request IP address");
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, "Proxy Failure");
             }
+
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Content = new StringContent(requestIP, Encoding.UTF8, "text/plain");
             return response;
@@ -30,15 +30,16 @@ namespace CFProxy.API.AzureFunc
 
         [FunctionName("NicUpdate")]
         public static async Task<HttpResponseMessage> NicUpdate(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "nic/update")] HttpRequestMessage req,
-            ILogger logger)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "nic/update")] HttpRequestMessage req)
         {
-            var handler = new NicUpdateHandler();
-            var cloudFlareClient = new CloudFlareClient(CloudFlareProxyFunctions.Client);
-            var result = await handler.Process(req, cloudFlareClient);
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(result, Encoding.UTF8, "text/plain");
-            return response;
+            using (var scope = Startup.NewScope())
+            {
+                var handler = scope.ServiceProvider.GetService<NicUpdateHandler>();
+                var result = await handler.Process(req);
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Content = new StringContent(result, Encoding.UTF8, "text/plain");
+                return response;
+            }
         }
     }
 }

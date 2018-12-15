@@ -16,10 +16,12 @@ namespace CFProxy.API.Handlers
 
         public HttpClient Client { get; }
 
-        public void Authenticate(string email, string key, string userAgent)
+        public void Authenticate(string email, string key, string userAgent, string requestIP)
         {
             if (!string.IsNullOrEmpty(userAgent))
                 Client.DefaultRequestHeaders.Add("User-Agent", userAgent);
+            if (!string.IsNullOrEmpty(requestIP))
+                Client.DefaultRequestHeaders.Add("X-Forwarded-For", requestIP);
             Client.DefaultRequestHeaders.Add("X-Auth-Email", email);
             Client.DefaultRequestHeaders.Add("X-Auth-Key", key);
         }
