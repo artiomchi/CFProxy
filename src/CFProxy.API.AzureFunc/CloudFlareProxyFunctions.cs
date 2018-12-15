@@ -23,17 +23,16 @@ namespace CFProxy.API.AzureFunc
                 RequestUri = new Uri(requestPath, UriKind.Relative),
             })
             {
-                if (req.Content != null)
-                    request.Content = new StreamContent(await req.Content.ReadAsStreamAsync());
-
                 var requestIP = req.TryGetRequestIPAddress();
                 if (requestIP != null)
                     request.Headers.TryAddWithoutValidation("X-Forwarded-For", requestIP);
-                foreach (var header in req.Headers)
-                    if (!string.Equals(header.Key, "Host", StringComparison.OrdinalIgnoreCase) &&
-                        !string.Equals(header.Key, "X-Forwarded-For", StringComparison.OrdinalIgnoreCase))
-                        if (!request.Headers.TryAddWithoutValidation(header.Key, header.Value) && request.Content != null)
-                            request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
+                if (req.Content != null)
+                {
+                    request.Content = new StreamContent(await req.Content.ReadAsStreamAsync());
+                    foreach (var header in req.Content.Headers)
+                        request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                }
 
                 var cloudFlareClient = scope.ServiceProvider.GetService<CloudFlareClient>();
                 var response = await cloudFlareClient.Client.SendAsync(request);
