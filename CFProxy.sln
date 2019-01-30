@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.API.Handlers", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.Repositories", "src\libs\CFProxy.Repositories\CFProxy.Repositories.csproj", "{C8FD861B-E0C3-42C7-A5B1-6B2ACE2CA60A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFProxy.Repositories.EFCore", "src\libs\CFProxy.Repositories.EFCore\CFProxy.Repositories.EFCore.csproj", "{388DC3FF-C1BA-4A27-8B48-0E594D0F5A60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFProxy.Models", "src\libs\CFProxy.Models\CFProxy.Models.csproj", "{E6465C02-D5EB-4DC9-89AD-F7E10AE25CC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,14 @@ Global
 		{C8FD861B-E0C3-42C7-A5B1-6B2ACE2CA60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8FD861B-E0C3-42C7-A5B1-6B2ACE2CA60A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8FD861B-E0C3-42C7-A5B1-6B2ACE2CA60A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{388DC3FF-C1BA-4A27-8B48-0E594D0F5A60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{388DC3FF-C1BA-4A27-8B48-0E594D0F5A60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{388DC3FF-C1BA-4A27-8B48-0E594D0F5A60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{388DC3FF-C1BA-4A27-8B48-0E594D0F5A60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6465C02-D5EB-4DC9-89AD-F7E10AE25CC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6465C02-D5EB-4DC9-89AD-F7E10AE25CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6465C02-D5EB-4DC9-89AD-F7E10AE25CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6465C02-D5EB-4DC9-89AD-F7E10AE25CC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +71,8 @@ Global
 		{B2A90609-E6A4-4C65-8BCE-6259ECF5AEC8} = {45CE045B-CE8D-4EA8-8210-2ED8479651B7}
 		{2B638E85-C8EE-45A5-A277-B4F98D2B92FB} = {06F0F5C3-33E2-482A-B7E9-679E09CE3710}
 		{C8FD861B-E0C3-42C7-A5B1-6B2ACE2CA60A} = {06F0F5C3-33E2-482A-B7E9-679E09CE3710}
+		{388DC3FF-C1BA-4A27-8B48-0E594D0F5A60} = {06F0F5C3-33E2-482A-B7E9-679E09CE3710}
+		{E6465C02-D5EB-4DC9-89AD-F7E10AE25CC9} = {06F0F5C3-33E2-482A-B7E9-679E09CE3710}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9F0204D-6049-48F6-9DF3-1092333360E3}

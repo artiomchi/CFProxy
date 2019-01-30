@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CFProxy.Repositories.Base;
+using CFProxy.Models;
 
 namespace CFProxy.Repositories
 {
     public interface IProxyKeysRepository
     {
-        Task<IList<CFZone>> ListKeyZones(int keyID);
-        Task<CFProxyKey> LoadAsync(string email, string key);
+        Task<IList<CloudFlareZone>> ListKeyZones(int keyID);
+        Task<CloudFlareProxyKey> LoadAsync(string email, string key);
         Task<DynDnsAccount> LoadDynDnsAccount(string login, string password, string host);
     }
 }

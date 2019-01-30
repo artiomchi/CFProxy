@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CFProxy.Repositories\CFProxy.Repositories.csproj" />
+    <ProjectReference Include="..\CFProxy.Repositories.EFCore\CFProxy.Repositories.EFCore.csproj" />
   </ItemGroup>
 
 </Project>

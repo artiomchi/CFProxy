@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace CFProxy.Repositories.Base
+namespace CFProxy.Repositories.EFCore.Base
 {
     public class CFProxyDbContext : DbContext
     {

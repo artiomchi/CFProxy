@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CFProxy.Repositories.Base
+namespace CFProxy.Repositories.EFCore.Base
 {
     public class CFAccount
     {
