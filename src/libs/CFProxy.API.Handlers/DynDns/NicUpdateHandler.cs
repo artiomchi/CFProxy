@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using CFProxy.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace CFProxy.API.Handlers.DynDns
@@ -12,10 +13,12 @@ namespace CFProxy.API.Handlers.DynDns
     public class NicUpdateHandler
     {
         private readonly CloudFlareClient _client;
+        private readonly IProxyKeysRepository _proxyKeysRepository;
 
-        public NicUpdateHandler(CloudFlareClient client)
+        public NicUpdateHandler(CloudFlareClient client, IProxyKeysRepository proxyKeysRepository)
         {
             _client = client;
+            _proxyKeysRepository = proxyKeysRepository;
         }
 
         public Task<string> Process(HttpContext context)
@@ -50,6 +53,11 @@ namespace CFProxy.API.Handlers.DynDns
             if (string.IsNullOrWhiteSpace(hostname))
                 return "nohost";
 
+            var dynDnsAccount = await _proxyKeysRepository.LoadDynDnsAccount(credentials.login, credentials.password, hostname);
+            if (dynDnsAccount == null)
+                return "badauth";
+
+            credentials = (true, dynDnsAccount.CFAccount.Email, dynDnsAccount.CFAccount.ApiKey);
             _client.Authenticate(credentials.login, credentials.password, userAgent, requestIP);
 
             var zones = await _client.GetZones();

@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
 
 namespace CFProxy.API.Handlers
@@ -27,5 +30,36 @@ namespace CFProxy.API.Handlers
             => request.Headers.TryGetValues(ForwardedForHeader, out var headerValues)
             ? headerValues.FirstOrDefault()?.Split(',').FirstOrDefault()
             : request.Properties.Values.OfType<HttpContext>().FirstOrDefault()?.TryGetRequestIPAddress();
+
+        public static IDictionary<string, ICollection<string>> GetRequestHeaders(this HttpContext context)
+        {
+            var result = new Dictionary<string, ICollection<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var header in context.Request.Headers)
+                if (result.ContainsKey(header.Key))
+                    foreach (var value in header.Value)
+                        result[header.Key].Add(value);
+                else
+                    result[header.Key] = header.Value.ToList();
+            return result;
+        }
+
+        public static IDictionary<string, ICollection<string>> GetRequestHeaders(this HttpRequestMessage request)
+        {
+            void AddHeaders(Dictionary<string, ICollection<string>> result, HttpHeaders headers)
+            {
+                foreach (var header in headers)
+                    if (result.ContainsKey(header.Key))
+                        foreach (var value in header.Value)
+                            result[header.Key].Add(value);
+                    else
+                        result[header.Key] = header.Value.ToList();
+            }
+
+            var dict = new Dictionary<string, ICollection<string>>(StringComparer.OrdinalIgnoreCase);
+            AddHeaders(dict, request.Headers);
+            if (request.Content != null)
+                AddHeaders(dict, request.Content.Headers);
+            return dict;
+        }
     }
 }

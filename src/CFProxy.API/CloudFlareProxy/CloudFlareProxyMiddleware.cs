@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CFProxy.API.Handlers;
+using CFProxy.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace CFProxy.API.CloudFlareProxy
@@ -16,39 +16,26 @@ namespace CFProxy.API.CloudFlareProxy
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, CloudFlareClient client)
+        public async Task Invoke(HttpContext context, CloudFlareClient client, IProxyKeysRepository proxyKeysRepository)
         {
-            using (var request = new HttpRequestMessage
+            using (var result = await client.SendRequest(
+                new HttpMethod(context.Request.Method),
+                context.Request.Path.Value.TrimStart('/'),
+                context.TryGetRequestIPAddress(),
+                context.GetRequestHeaders(),
+                context.Request.ContentLength > 0 ? context.Request.Body : null))
             {
-                Method = new HttpMethod(context.Request.Method),
-                RequestUri = new Uri(context.Request.Path.Value.TrimStart('/'), UriKind.Relative),
-            })
-            {
-                var requestIP = context.TryGetRequestIPAddress();
-                if (requestIP != null)
-                    request.Headers.TryAddWithoutValidation("X-Forwarded-For", requestIP);
+                context.Response.StatusCode = (int)result.StatusCode;
+                foreach (var header in result.Headers)
+                    context.Response.Headers[header.Key] = header.Value.ToArray();
 
-                if (context.Request.ContentLength > 0)
+                foreach (var header in result.Content.Headers)
+                    context.Response.Headers[header.Key] = header.Value.ToArray();
+
+                context.Response.Headers.Remove("transfer-encoding");
+                using (var responseStream = await result.Content.ReadAsStreamAsync())
                 {
-                    request.Content = new StreamContent(context.Request.Body);
-                    foreach (var header in context.Request.Headers)
-                        request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
-                }
-
-                using (var result = await client.Client.SendAsync(request))
-                {
-                    context.Response.StatusCode = (int)result.StatusCode;
-                    foreach (var header in result.Headers)
-                        context.Response.Headers[header.Key] = header.Value.ToArray();
-
-                    foreach (var header in result.Content.Headers)
-                        context.Response.Headers[header.Key] = header.Value.ToArray();
-
-                    context.Response.Headers.Remove("transfer-encoding");
-                    using (var responseStream = await result.Content.ReadAsStreamAsync())
-                    {
-                        await responseStream.CopyToAsync(context.Response.Body);
-                    }
+                    await responseStream.CopyToAsync(context.Response.Body);
                 }
             }
         }
