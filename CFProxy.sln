@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.API.AzureFunc", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.API.Handlers", "src\libs\CFProxy.API.Handlers\CFProxy.API.Handlers.csproj", "{2B638E85-C8EE-45A5-A277-B4F98D2B92FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.Repositories", "CFProxy.Repositories\CFProxy.Repositories.csproj", "{C8FD861B-E0C3-42C7-A5B1-6B2ACE2CA60A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFProxy.Repositories", "src\libs\CFProxy.Repositories\CFProxy.Repositories.csproj", "{C8FD861B-E0C3-42C7-A5B1-6B2ACE2CA60A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
