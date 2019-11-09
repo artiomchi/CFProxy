@@ -9,12 +9,7 @@ namespace CFProxy.API.CloudFlareProxy
 {
     public class CloudFlareProxyMiddleware
     {
-        private readonly RequestDelegate _next;
-
-        public CloudFlareProxyMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        public CloudFlareProxyMiddleware(RequestDelegate _) { }
 
         public async Task Invoke(HttpContext context, CloudFlareClient client)
         {

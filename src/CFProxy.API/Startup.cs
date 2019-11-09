@@ -1,6 +1,4 @@
 ﻿using System;
-using CFProxy.API.CloudFlareProxy;
-using CFProxy.API.DynDns;
 using CFProxy.API.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +48,7 @@ namespace CFProxy.API
 
             app.UseDynDnsHandler();
             app.UseCloudFlareProxyHandler();
+            app.UseMyIPHandler();
         }
     }
 }

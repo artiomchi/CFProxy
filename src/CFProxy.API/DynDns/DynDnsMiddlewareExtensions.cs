@@ -1,9 +1,9 @@
 ﻿using System;
+using CFProxy.API.DynDns;
 using CFProxy.API.Handlers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace CFProxy.API.DynDns
+namespace Microsoft.AspNetCore.Builder
 {
     public static class DynDnsMiddlewareExtensions
     {

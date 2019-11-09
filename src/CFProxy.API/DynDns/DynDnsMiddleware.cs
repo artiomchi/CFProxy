@@ -7,12 +7,7 @@ namespace CFProxy.API.DynDns
 {
     public class DynDnsMiddleware
     {
-        private readonly RequestDelegate _next;
-
-        public DynDnsMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        public DynDnsMiddleware(RequestDelegate _) { }
 
         public async Task Invoke(HttpContext context, NicUpdateHandler handler)
         {

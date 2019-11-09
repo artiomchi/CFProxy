@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.AspNetCore.Builder;
+using CFProxy.API.CloudFlareProxy;
 
-namespace CFProxy.API.CloudFlareProxy
+namespace Microsoft.AspNetCore.Builder
 {
     public static class CloudFlareProxyMiddlewareExtensions
     {
