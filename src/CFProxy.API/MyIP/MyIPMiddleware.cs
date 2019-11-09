@@ -2,13 +2,19 @@
 using System.Threading.Tasks;
 using CFProxy.API.Handlers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CFProxy.API.MyIP
 {
     public class MyIPMiddleware
     {
-        public MyIPMiddleware(RequestDelegate _) { }
+        private readonly IConfiguration _configuration;
+
+        public MyIPMiddleware(RequestDelegate _, IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public async Task Invoke(HttpContext context)
         {
@@ -27,6 +33,7 @@ namespace CFProxy.API.MyIP
                 case "JSON":
                     {
                         context.Response.ContentType = "application/json";
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", "https://" + _configuration["mainHost"]);
                         var jsonIp = JsonConvert.SerializeObject(new { ip = ipAddress });
                         await context.Response.WriteAsync(jsonIp);
                         return;
@@ -42,7 +49,7 @@ namespace CFProxy.API.MyIP
                         }
 
                         context.Response.ContentType = "application/javascript";
-                        var content = $"{methodName}({ipAddress})";
+                        var content = $"{methodName}('{ipAddress}')";
                         await context.Response.WriteAsync(content);
                         return;
                     }
