@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>93d8c951-fd77-4ad2-971e-99f38bce25a9</UserSecretsId>
-    <DeployToAWS>true</DeployToAWS>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DeployToAWS>false</DeployToAWS>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(DeployToAWS) != 'true'">
