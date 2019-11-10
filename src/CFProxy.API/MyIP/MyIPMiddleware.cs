@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CFProxy.API.Handlers;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +27,30 @@ namespace CFProxy.API.MyIP
                 return;
             }
 
+            if (context.Request.Query["v4"].Count > 0 && ipAddress.Contains(':'))
+            {
+                context.Response.StatusCode = 502;
+                await context.Response.WriteAsync("Request should have been made over IPv4");
+                return;
+            }
+
+            if (context.Request.Query["v6"].Count > 0 && !ipAddress.Contains(':'))
+            {
+                context.Response.StatusCode = 502;
+                await context.Response.WriteAsync("Request should have been made over IPv6");
+                return;
+            }
+
             var format = context.Request.Query["format"];
-            if (string.IsNullOrEmpty(format) && context.Request.QueryString.HasValue)
-                format = context.Request.QueryString.Value.TrimStart('?');
+            if (string.IsNullOrEmpty(format))
+                format = context.Request.Query["f"];
+            if (string.IsNullOrEmpty(format))
+            {
+                var supportedFormats = new[] { "json", "jsonp", "xml" };
+                format = context.Request.Query.Keys
+                    .Where(k => supportedFormats.Contains(k, StringComparer.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+            }
             switch (format.ToString().ToUpperInvariant())
             {
                 case "JSON":

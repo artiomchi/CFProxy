@@ -37,9 +37,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
     <script>
-        function loadIpAddress(domain, elementId) {
+        function loadIpAddress(version, domain, elementId) {
             let element = document.getElementById(elementId)
-            axios.get(`https://${domain}/myip?json`)
+            axios.get(`https://${domain}/myip?json&v${version}`)
                 .then(function (response) {
                     element.innerText = response.data.ip;
                 })
@@ -50,8 +50,8 @@
 
         axios.get('/myip/config')
             .then(function (response) {
-                loadIpAddress(response.data.ipv4Host, 'ipv4Address');
-                loadIpAddress(response.data.ipv6Host, 'ipv6Address');
+                loadIpAddress(4, response.data.ipv4Host, 'ipv4Address');
+                loadIpAddress(6, response.data.ipv6Host, 'ipv6Address');
             })
             .catch(function () {
                 document.getElementById('status').innerText = 'Failed to load config';

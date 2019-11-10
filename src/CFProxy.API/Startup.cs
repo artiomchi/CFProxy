@@ -24,10 +24,6 @@ namespace CFProxy.API
             {
                 options.MaxAge = TimeSpan.FromDays(730);
             });
-            services.AddHttpsRedirection(options =>
-            {
-                options.HttpsPort = 443;
-            });
 
             services.AddHttpClient<CloudFlareClient>(CloudFlareClient.ConfigureClient);
         }
