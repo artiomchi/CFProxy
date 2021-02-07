@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
 COPY ["src/CFProxy.API/CFProxy.API.csproj", "src/CFProxy.API/"]
 COPY ["src/libs/CFProxy.API.Handlers/CFProxy.API.Handlers.csproj", "src/libs/CFProxy.API.Handlers/"]
-RUN dotnet restore "CFProxy.API/CFProxy.API.csproj"
+RUN dotnet restore "src/CFProxy.API/CFProxy.API.csproj"
 COPY . .
 WORKDIR "/src/src/CFProxy.API"
 RUN dotnet build "CFProxy.API.csproj" -c Release -o /app/build
