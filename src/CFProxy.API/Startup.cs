@@ -25,6 +25,14 @@ namespace CFProxy.API
                 options.MaxAge = TimeSpan.FromDays(730);
             });
 
+            services.AddCors(o => o
+                .AddDefaultPolicy(b => b
+                    .WithOrigins(
+                        "https://" + Configuration["mainHost"],
+                        "https://" + Configuration["altHost"],
+                        "https://" + Configuration["ipv4Host"],
+                        "https://" + Configuration["ipv6Host"])));
+
             services.AddHttpClient<CloudFlareClient>(CloudFlareClient.ConfigureClient);
         }
 
@@ -41,6 +49,8 @@ namespace CFProxy.API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseDynDnsHandler();
             app.UseCloudFlareProxyHandler();

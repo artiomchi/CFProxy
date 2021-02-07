@@ -4,19 +4,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CFProxy.API.Handlers;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace CFProxy.API.MyIP
 {
     public class MyIPMiddleware
     {
-        private readonly IConfiguration _configuration;
-
-        public MyIPMiddleware(RequestDelegate _, IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        public MyIPMiddleware(RequestDelegate _) { }
 
         public async Task Invoke(HttpContext context)
         {
@@ -43,7 +37,10 @@ namespace CFProxy.API.MyIP
 
             var format = context.Request.Query["format"];
             if (string.IsNullOrEmpty(format))
+            {
                 format = context.Request.Query["f"];
+            }
+
             if (string.IsNullOrEmpty(format))
             {
                 var supportedFormats = new[] { "json", "jsonp", "xml" };
@@ -56,7 +53,6 @@ namespace CFProxy.API.MyIP
                 case "JSON":
                     {
                         context.Response.ContentType = "application/json";
-                        context.Response.Headers.Add("Access-Control-Allow-Origin", "https://" + _configuration["mainHost"]);
                         var jsonIp = JsonConvert.SerializeObject(new { ip = ipAddress });
                         await context.Response.WriteAsync(jsonIp);
                         return;
