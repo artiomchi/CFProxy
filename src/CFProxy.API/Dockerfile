@@ -5,11 +5,11 @@ ENV ASPNETCORE_URLS=http://+:8080
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
-COPY ["CFProxy.API/CFProxy.API.csproj", "CFProxy.API/"]
-COPY ["libs/CFProxy.API.Handlers/CFProxy.API.Handlers.csproj", "libs/CFProxy.API.Handlers/"]
+COPY ["src/CFProxy.API/CFProxy.API.csproj", "src/CFProxy.API/"]
+COPY ["src/libs/CFProxy.API.Handlers/CFProxy.API.Handlers.csproj", "src/libs/CFProxy.API.Handlers/"]
 RUN dotnet restore "CFProxy.API/CFProxy.API.csproj"
 COPY . .
-WORKDIR "/src/CFProxy.API"
+WORKDIR "/src/src/CFProxy.API"
 RUN dotnet build "CFProxy.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
