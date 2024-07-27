@@ -3,59 +3,46 @@ name: Build and Deploy to Cloud Run
 on:
   push:
     branches:
-    - master
+    - main
 
-# Environment variables available to all jobs and steps in this workflow
 env:
-  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
-  RUN_REGION: europe-west1
   SERVICE_NAME: cfproxy-api
-  SERVICE_IMAGE: cfproxy-api
-  REGISTRY_HOSTNAME: eu.gcr.io
-
 jobs:
-  setup-build:
+  build:
     name: Setup, Build, Push and Deploy
     runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - name: Build
-      run: |
-        docker build -f "./src/CFProxy.API/Dockerfile" -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$SERVICE_IMAGE":"$GITHUB_SHA" \
-          --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" .
-
-    - uses: google-github-actions/setup-gcloud@master
+    - name: GCloud authenticate
+      uses: google-github-actions/auth@v2
       with:
-        service_account_key: ${{ secrets.GKE_KEY }}
-        project_id: ${{ secrets.GKE_PROJECT }}
+        create_credentials_file: true
+        workload_identity_provider: '${{ secrets.GCP_WIP }}'
+        service_account: '${{ secrets.GCP_ACCOUNT }}'
 
-    - run: |
-        gcloud --quiet auth configure-docker
-
-    - name: Push Main service
+    - name: Configure Docker
       run: |
-        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$SERVICE_IMAGE:$GITHUB_SHA
+        gcloud --quiet auth configure-docker ${{ secrets.GCP_REGISTRY }}
 
-  deploy:
-    needs: setup-build
-    name: Deploy services
-    runs-on: ubuntu-latest
+    - name: Build container
+      id: build
+      run: |
+        SHA_TAG="sha-${GITHUB_SHA::7}"
+        echo "sha_tag=$SHA_TAG" >> $GITHUB_OUTPUT
+        dotnet publish -r linux-x64 -p:PublishProfile=DefaultContainer -p:ContainerRegistry=${{ secrets.GCP_REGISTRY }} -p:ContainerRepository=${{ secrets.GCP_REPOSITORY }}/$SERVICE_NAME -p:ContainerImageTag=$SHA_TAG
 
-    steps:
-    - uses: google-github-actions/setup-gcloud@master
+    - name: Deploy to Cloud Run
+      uses: 'google-github-actions/deploy-cloudrun@v2'
       with:
-        service_account_key: ${{ secrets.GKE_KEY }}
-        project_id: ${{ secrets.GKE_PROJECT }}
-
-    - name: Deploy Main
-      run: |-
-        gcloud run deploy "$SERVICE_NAME" \
-          --quiet \
-          --region "$RUN_REGION" \
-          --image "$REGISTRY_HOSTNAME/$GKE_PROJECT/$SERVICE_IMAGE:$GITHUB_SHA" \
-          --platform "managed" \
-          --allow-unauthenticated
+        project_id: ${{ secrets.GCP_PROJECT }}
+        service: ${{ env.SERVICE_NAME }}
+        image: "${{ secrets.GCP_REGISTRY }}/${{ secrets.GCP_REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ steps.build.outputs.sha_tag }}"
+        region: ${{ secrets.GCP_REGION }}
+        flags: "--allow-unauthenticated"

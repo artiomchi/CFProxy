@@ -1,0 +1,41 @@
+@WebApplication1_HostAddress = http://localhost:39590
+
+GET {{WebApplication1_HostAddress}}
+###
+
+## My IP Page ##
+
+###
+GET {{WebApplication1_HostAddress}}/myip/config
+
+###
+GET {{WebApplication1_HostAddress}}/myip
+
+###
+GET {{WebApplication1_HostAddress}}/myip?format=json
+
+###
+GET {{WebApplication1_HostAddress}}/myip?format=jsonp&callback=test
+
+###
+GET {{WebApplication1_HostAddress}}/myip?format=xml
+
+## Dyn DNS checks
+
+###
+GET {{WebApplication1_HostAddress}}/checkip
+
+### badauth
+GET {{WebApplication1_HostAddress}}/nic/update
+
+### nohost
+GET {{WebApplication1_HostAddress}}/nic/update
+Authorization: Basic bG9naW46cGFzc3dvcmQ=
+
+### 911 zone null
+GET {{WebApplication1_HostAddress}}/nic/update?hostname=test
+Authorization: Basic bG9naW46cGFzc3dvcmQ=
+
+### ok ::1
+GET {{WebApplication1_HostAddress}}/nic/update?hostname=flbs.io
+Authorization: Basic bG9naW46cGFzc3dvcmQ=

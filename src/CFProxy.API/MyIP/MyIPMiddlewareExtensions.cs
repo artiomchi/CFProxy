@@ -1,22 +1,16 @@
-﻿using System;
-using CFProxy.API.MyIP;
+﻿using CFProxy.API.MyIP;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
+
+public static class MyIPMiddlewareExtensions
 {
-    public static class MyIPMiddlewareExtensions
+    public static WebApplication UseMyIPHandler(this WebApplication app)
     {
-        public static IApplicationBuilder UseMyIPHandler(this IApplicationBuilder app)
-        {
-            if (app == null)
-                throw new ArgumentNullException(nameof(app));
+        ArgumentNullException.ThrowIfNull(app);
 
-            app.Map("/myip/config", mapApp => mapApp.UseMiddleware<MyIPConfigMiddleware>());
-            app.Map("/myip", mapApp => mapApp.UseMiddleware<MyIPMiddleware>());
+        app.Map("/myip/config", mapApp => mapApp.UseMiddleware<MyIPConfigMiddleware>());
+        app.Map("/myip", mapApp => mapApp.UseMiddleware<MyIPMiddleware>());
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
-            return app;
-        }
+        return app;
     }
 }

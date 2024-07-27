@@ -1,28 +1,13 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+﻿namespace CFProxy.API.MyIP;
 
-namespace CFProxy.API.MyIP
+#pragma warning disable CS9113 // Parameter is unread.
+public class MyIPConfigMiddleware(RequestDelegate _, IConfiguration configuration)
+#pragma warning restore CS9113 // Parameter is unread.
 {
-    public class MyIPConfigMiddleware
+    public async Task Invoke(HttpContext context)
     {
-        private readonly IConfiguration _configuration;
+        var config = new MyIPConfig(configuration["ipv4Host"]!, configuration["ipv6Host"]!);
 
-        public MyIPConfigMiddleware(RequestDelegate _, IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public async Task Invoke(HttpContext context)
-        {
-            context.Response.ContentType = "application/json";
-            var config = JsonConvert.SerializeObject(new
-            {
-                ipv4Host = _configuration["ipv4Host"],
-                ipv6Host = _configuration["ipv6Host"],
-            });
-            await context.Response.WriteAsync(config);
-        }
+        await Results.Json(config, MyIPJsonGen.Default.MyIPConfig).ExecuteAsync(context);
     }
 }
